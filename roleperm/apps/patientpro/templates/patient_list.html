@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Listing{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Patient Listing</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{% url 'create_patient' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Patient
+                    </a>
+                </div>
+            </div>
+
+            <!-- {% if messages %}
+            <div class="messages mb-3">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %} -->
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">User</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Medical History</th>
+                            <th scope="col" style="width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.user.username }}</td>
+                            <td>{{ patient.user.email }}</td>
+                            <td>{{ patient.phone_number }}</td>
+                            <td>{{ patient.address|truncatechars:50 }}</td>
+                            <td>{{ patient.medical_history|truncatechars:50 }}</td>
+
+                            <td>
+                                <a href="{% url 'view_patient' patient.id %}" class="btn btn-info btn-sm">View</a> 
+                                <a href="{% url 'edit_patient' patient.id %}" class="btn btn-warning btn-sm">Edit</a> 
+                                <a href="{% url 'delete_patient' patient.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No patients available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

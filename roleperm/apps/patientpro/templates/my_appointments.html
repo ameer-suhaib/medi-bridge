@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Appointments{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">My Appointments</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Book New Appointment
+                    </a>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                                <tr>
+                                    <td>Dr. {{ appointment.doctor.user.username }}</td>
+                                    <td>{{ appointment.appointment_date }}</td>
+                                    <td>{{ appointment.start_time}}</td>
+                                    <td>{{ appointment.end_time}}</td>
+                                    <td>
+                                        <span class="badge {% if appointment.status == 'PENDING' %}bg-warning
+                                                     {% elif appointment.status == 'CONFIRMED' %}bg-success
+                                                     {% elif appointment.status == 'CANCELLED' %}bg-danger
+                                                     {% elif appointment.status == 'COMPLETED' %}bg-info
+                                                     {% endif %}">
+                                            {{ appointment.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if appointment.status in 'PENDING,CONFIRMED' and appointment.appointment_date >= today %}
+                                            <a href="{% url 'cancel_appointment' appointment.id %}" 
+                                               class="btn btn-sm btn-danger"
+                                               onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                                <i class="fas fa-times me-1"></i>Cancel
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <img src="{% static 'no_appointment.jpg' %}" alt="No appointments" class="mb-3" style="max-width: 200px;">
+                    <h4>No Appointments Found</h4>
+                    <p class="text-muted">You haven't booked any appointments yet.</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Book Your First Appointment
+                    </a>
+                </div>
+            {% endif %}
+            </main>
+</div>
+
+<style>
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.badge {
+    padding: 8px 12px;
+}
+</style>
+{% endblock %}

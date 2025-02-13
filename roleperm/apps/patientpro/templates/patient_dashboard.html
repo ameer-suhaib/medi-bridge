@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Welcome, {{ request.user.get_full_name|default:request.user.username }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bi bi-calendar">
+                                        <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">Upcoming Appointments</h6>
+                                    <h2 class="card-title mb-0">{{ upcoming_appointments_count|default:"0" }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">Completed Visits</h6>
+                                    <h2 class="card-title mb-0">{{ completed_appointments_count|default:"0" }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bg-info bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-user-md fa-2x text-info"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle mb-1 text-muted">My Doctors</h6>
+                                    <h2 class="card-title mb-0">{{ doctors_count|default:"0" }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in upcoming_appointments %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-md text-primary me-2"></i>
+                                                Dr. {{ appointment.doctor.user.get_full_name }}
+                                            </div>
+                                        </td>
+                                        <td>{{ appointment.appointment_date }}</td>
+                                        <td>{{ appointment.time_slot.start_time|time:"g:i A" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if appointment.status == 'CONFIRMED' %}success{% elif appointment.status == 'PENDING' %}warning{% else %}danger{% endif %}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                                {% if appointment.status != 'CANCELLED' %}
+                                                <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <img src="{% static 'no_appointment.jpg' %}" alt="No appointments" class="mb-3" style="max-width: 200px;">
+                            <h5>No Upcoming Appointments</h5>
+                            <p class="text-muted">You don't have any upcoming appointments scheduled.</p>
+                            <a href="{% url 'book_appointment' %}" class="btn btn-primary">
+                                <i class="bi bi-calendar"></i>Book New Appointment
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Medical History -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Medical History</h5>
+                    <button class="btn btn-sm btn-outline-primary">View All</button>
+                </div>
+                <div class="card-body">
+                    {% if medical_history %}
+                        <div class="timeline">
+                            {% for history in medical_history %}
+                            <div class="timeline-item">
+                                <div class="timeline-date">{{ history.date }}</div>
+                                <div class="timeline-content">
+                                    <h6>{{ history.title }}</h6>
+                                    <p>{{ history.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No recent medical history available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    /* Dashboard Styles */
+
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 20px;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+
+    .timeline-date {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-content {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+    /* Card hover effect */
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            height: auto;
+            padding-top: 0;
+        }
+    }
+</style>
+{% endblock %}

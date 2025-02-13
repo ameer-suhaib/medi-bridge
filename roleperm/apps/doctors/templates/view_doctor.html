@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Doctor Details</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <p><strong>User:</strong> {{ doctor.user.username }}</p>
+            <p><strong>Email:</strong> {{ doctor.user.email }}</p>
+            <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+            <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
+            <p><strong>Experience:</strong> {{ doctor.experience }}</p>
+            <p><strong>Hospital Name:</strong> {{ doctor.hospital_name }}</p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'doc_listing' %}" class="btn btn-secondary">Back to list</a>
+    </div>
+</div>
+{% endblock %}

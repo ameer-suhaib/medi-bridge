@@ -1,0 +1,65 @@
+<!-- doctor_listing.html -->
+{% extends 'base.html' %}
+
+{% block title %}Doctor Listing{% endblock %}
+
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Include Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0 sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Doctor Listing</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{% url 'create_doc' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Doctor
+                    </a>
+                </div>
+            </div>
+            <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Specialization</th>
+                        <th scope="col">Qualification</th>
+                        <th scope="col">Experience</th>
+                        <th scope="col">Hospital Name</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in doctors %}
+                    <tr>
+                        <td>Dr.{{ doctor.user.username }}</td>
+                        <td>{{ doctor.user.email }}</td>
+                        <td>{{ doctor.specialization }}</td>
+                        <td>{{ doctor.qualification }}</td>
+                        <td>{{ doctor.experience }}</td>
+                        <td>{{ doctor.hospital_name }}</td>
+                        <td>
+                            <a href="{% url 'view_doctor' doctor.id %}" class="btn btn-info btn-sm">View</a> 
+                            <a href="{% url 'edit_doctor' doctor.id %}" class="btn btn-warning btn-sm">Edit</a> 
+                            <a href="{% url 'delete_doctor' doctor.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No doctors available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        {% include 'sidebar.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content flex-grow-1 p-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Delete Time Slot</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Are you sure you want to delete this time slot?</p>
+                            <div class="alert alert-warning">
+                                <strong>Details:</strong><br>
+                                Day: {{ slot.day }}<br>
+                                Time: {{ slot.start_time }} - {{ slot.end_time }}<br>
+                                Duration: {{ slot.slot_duration }} minutes
+                            </div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                                <a href="{% url 'manage_slots' %}" class="btn btn-secondary">Cancel</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
