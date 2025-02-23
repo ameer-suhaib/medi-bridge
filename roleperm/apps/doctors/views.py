@@ -180,25 +180,15 @@ def doc_profile(request,id):
 
 @login_required
 def doctor_appointments(request):
-    # Debug: Print user information
-    print(f"Current User: {request.user}")
-    print(f"User ID: {request.user.id}")
-    print(f"Username: {request.user.username}")
-
     try:
-        # Debug: Verify doctor profile exists
         doctor = request.user.doctor
-        print(f"Doctor Object: {doctor}")
-        print(f"Doctor ID: {doctor.id}")
     except Exception as e:
-        # Critical error if doctor profile doesn't exist
-        print(f"ERROR: No doctor profile found for user {request.user.username}")
         messages.error(request, "No doctor profile associated with this account.")
         return render(request, 'doctor_appointments.html', {'error': 'No doctor profile found'})
 
     # Handle appointment status update
     if request.method == 'POST':
-        appointment_id = request.POST.get('appointment_id')
+        appointment_id = request.POST.get('appointment_id')	
         action = request.POST.get('action')
         
         try:
@@ -219,46 +209,34 @@ def doctor_appointments(request):
         except Appointment.DoesNotExist:
             messages.error(request, 'Appointment not found.')
 
-    # Get appointments for the current doctor with extensive logging
-    try:
-        appointments = Appointment.objects.filter(
-            doctor=doctor
-        ).select_related(
-            'user', 'time_slot'
-        ).order_by('-appointment_date', '-created_at')
+    # Get filter parameters from request
+    status_filter = request.GET.get('status', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
 
-        # Debug: Print appointment details
-        print(f"Total Appointments: {appointments.count()}")
-        for appt in appointments:
-            print(f"Appointment Details:")
-            print(f"  ID: {appt.id}")
-            print(f"  Patient: {appt.user.username}")
-            print(f"  Date: {appt.appointment_date}")
-            print(f"  Status: {appt.status}")
-        
-        # Group appointments by status
-        pending_appointments = appointments.filter(status='PENDING')
-        confirmed_appointments = appointments.filter(status='CONFIRMED')
-        cancelled_appointments = appointments.filter(status='CANCELLED')
-        completed_appointments = appointments.filter(status='COMPLETED')
+    # Base queryset for appointments
+    appointments = Appointment.objects.filter(doctor=doctor)
 
-        # Debug: Print count of appointments in each status
-        print(f"Pending Appointments: {pending_appointments.count()}")
-        print(f"Confirmed Appointments: {confirmed_appointments.count()}")
-        print(f"Cancelled Appointments: {cancelled_appointments.count()}")
-        print(f"Completed Appointments: {completed_appointments.count()}")
-        
-        context = {
-            'pending_appointments': pending_appointments,
-            'confirmed_appointments': confirmed_appointments,
-            'cancelled_appointments': cancelled_appointments,
-            'completed_appointments': completed_appointments,
-        }
-        
-        return render(request, 'doctor_appointments.html', context)
+    # Apply status filter if provided
+    if status_filter:
+        appointments = appointments.filter(status=status_filter.upper())
 
-    except Exception as e:
-        # Catch and log any unexpected errors
-        print(f"UNEXPECTED ERROR: {str(e)}")
-        messages.error(request, f"An error occurred: {str(e)}")
-        return render(request, 'doctor_appointments.html', {'error': str(e)})
+    # Apply date range filter if dates are provided
+    if date_from:
+        appointments = appointments.filter(appointment_date__gte=date_from)
+    if date_to:
+        appointments = appointments.filter(appointment_date__lte=date_to)
+
+    # Order appointments
+    appointments = appointments.order_by('-appointment_date', '-created_at')
+
+    # Prepare context with all possible statuses for filter dropdown
+    context = {
+        'appointments': appointments,
+        'statuses': ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'],
+        'selected_status': status_filter,
+        'date_from': date_from,
+        'date_to': date_to
+    }
+    
+    return render(request, 'doctor_appointments.html', context)

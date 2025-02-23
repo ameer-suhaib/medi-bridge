@@ -1,154 +1,101 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Doctor Appointments{% endblock %}
-
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">My Appointments</h2>
-                <div class="d-flex align-items-center">
-                    <label for="statusFilter" class="me-2 mb-0">Filter by Status:</label>
-                    <select id="statusFilter" class="form-select form-select-sm" style="width: auto;">
-                        <option value="all">All Appointments</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="completed">Completed</option>
-                    </select>
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 px-0">
+            {% include 'sidebar.html' %}
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <br>    
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Appointment Filters</h3>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">All Statuses</option>
+                                {% for status in statuses %}
+                                <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>
+                                    {{ status }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" name="date_from" id="date_from" class="form-control" value="{{ date_from }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" name="date_to" id="date_to" class="form-control" value="{{ date_to }}">
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a href="{% url 'doctor_appointments' %}" class="btn btn-secondary ms-2">Reset Filters</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-            
-            {% if messages %}
-                <div class="mb-3">
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            
+
             <div class="card">
-                <div class="card-body p-0">
+                <div class="card-header">
+                    <h3>Appointments List</h3>
+                </div>
+                <div class="card-body">
+                    {% if appointments %}
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="appointmentsTable">
-                            <thead class="table-light">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
                                     <th>Patient</th>
                                     <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Slot</th>
+                                    <th>Time Slot</th>
                                     <th>Status</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="appointmentTable">
-                                {% with all_appointments=pending_appointments|add:confirmed_appointments|add:cancelled_appointments|add:completed_appointments %}
-                                    {% for appointment in all_appointments %}
-                                        <tr class="appointment-row" data-status="{{ appointment.status|lower }}">
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="ms-2">
-                                                        <div class="fw-bold">{{ appointment.user.get_full_name|default:appointment.user.username }}</div>
-                                                        <small class="text-muted">{{ appointment.user.email }}</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>{{ appointment.appointment_date|date:"D, d M Y" }}</td>
-                                            <td>{{ appointment.start_time|time:"h:i A" }} - {{ appointment.end_time|time:"h:i A" }}</td>
-                                            <td>{{ appointment.time_slot.get_time_block_display }}</td>
-                                            <td>
-                                                <span class="badge {% if appointment.status == 'PENDING' %}bg-warning
-                                                         {% elif appointment.status == 'CONFIRMED' %}bg-success
-                                                         {% elif appointment.status == 'CANCELLED' %}bg-danger
-                                                         {% elif appointment.status == 'COMPLETED' %}bg-info
-                                                         {% endif %}">
-                                                    {{ appointment.status|title }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                {% if appointment.status == "PENDING" %}
-                                                <form method="post" class="d-inline">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
-                                                    <div class="btn-group btn-group-sm" role="group">
-                                                        <button type="submit" name="action" value="confirm" 
-                                                                class="btn btn-outline-success" 
-                                                                onclick="return confirm('Are you sure you want to confirm this appointment?')">
-                                                            <i class="fas fa-check me-1"></i>Confirm
-                                                        </button>
-                                                        <button type="submit" name="action" value="cancel" 
-                                                                class="btn btn-outline-danger" 
-                                                                onclick="return confirm('Are you sure you want to cancel this appointment?')">
-                                                            <i class="fas fa-times me-1"></i>Cancel
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                                {% else %}
-                                                <span class="text-muted">No actions</span>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% empty %}
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <img src="{% static 'no_data.svg' %}" alt="No Appointments" style="max-width: 200px; opacity: 0.6;" class="mb-3">
-                                                    <h4 class="text-muted">No Appointments Found</h4>
-                                                    <p class="text-muted">You have no appointments at the moment.</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                {% endwith %}
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td>{{ appointment.user.username }}</td>
+                                    <td>{{ appointment.appointment_date }}</td>
+                                    <td>{{ appointment.time_slot }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if appointment.status == 'PENDING' %}bg-warning
+                                            {% elif appointment.status == 'CONFIRMED' %}bg-success
+                                            {% elif appointment.status == 'CANCELLED' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ appointment.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <form method="post" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                                <button type="submit" name="action" value="confirm" class="btn btn-sm btn-outline-success">Confirm</button>
+                                                <button type="submit" name="action" value="cancel" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="alert alert-info">No appointments found.</div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusFilter = document.getElementById("statusFilter");
-        const rows = document.querySelectorAll(".appointment-row");
-        
-        statusFilter.addEventListener("change", function() {
-            const selectedStatus = this.value.toLowerCase();
-            
-            rows.forEach(row => {
-                const rowStatus = row.dataset.status;
-                
-                if (selectedStatus === "all" || rowStatus === selectedStatus) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-            
-            // Update visual feedback
-            const visibleRows = document.querySelectorAll('.appointment-row:not([style*="display: none"])');
-            if (visibleRows.length === 0) {
-                document.querySelector('tbody').innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center py-4">
-                            <div class="d-flex flex-column align-items-center">
-                                <h4 class="text-muted">No Appointments Found</h4>
-                                <p class="text-muted">No appointments match the selected status.</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-        });
-    });
-</script>
 {% endblock %}
