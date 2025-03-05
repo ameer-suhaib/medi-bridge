@@ -92,12 +92,12 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="" class="nav-link {% if request.resolver_match.url_name == 'doctor_patients' %}active{% endif %}">
+                <a href="{% url 'doctor_patients' %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_patients' %}active{% endif %}">
                     <i class="fas fa-user-injured"></i> My Patients
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{% url 'doc_profile' id=request.user.id %}" class="nav-link {% if request.resolver_match.url_name == 'doctor_profile' %}active{% endif %}">
+                <a href="{% url 'doc_profile' id=request.user.id %}" class="nav-link {% if request.resolver_match.url_name == 'hospital_docs' %}active{% endif %}">
                     <i class="fas fa-user-circle"></i> My Profile
                 </a>
             </li>
@@ -120,6 +120,11 @@
             <li class="nav-item">
                 <a href="{% url 'my_appointments' %}" class="nav-link {% if request.resolver_match.url_name == 'my_appointments' %}active{% endif %}">
                     <i class="fas fa-calendar-check"></i> My Appointments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'hospital_docs'  %}" class="nav-link {% if request.resolver_match.url_name == 'my_doctor' %}active{% endif %}">
+                    <i class="fas fa-user-circle"></i> Hospital Doctors
                 </a>
             </li>
             <li class="nav-item">

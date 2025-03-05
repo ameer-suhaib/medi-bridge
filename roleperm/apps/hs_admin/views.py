@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 
 from apps.accounts.decorator import allowed_users
 from apps.doctors.models import Doctor
@@ -15,3 +16,4 @@ def admin_dashboard(request):
     context.update({'patient_count':patient_count})
     context.update({'appointment':appo_count})
     return render(request,"admin_dashboard.html",context)
+

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 col-lg-2 px-0">
+            {% include 'sidebar.html' %}
+        </div>
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-4">
+            <h2 class="my-4">Hospital Doctors</h2>
+            
+            <!-- Specialization Filter -->
+            <form method="get" class="mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select name="specialization" class="form-control" onchange="this.form.submit()">
+                            <option value="">All Specializations</option>
+                            {% for spec_value, spec_display in specialization_choices %}
+                            <option value="{{ spec_value }}" 
+                                    {% if spec_value == selected_specialization %}selected{% endif %}>
+                                {{ spec_display }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Doctors Grid -->
+            <div class="row">
+                {% for doctor in doctors %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Dr. {{ doctor.user.username }}</h5>
+                            <p class="card-text">
+                                <strong>Specialization:</strong> {{ doctor.specialization }}<br>
+                                <strong>Qualification:</strong> {{ doctor.qualification }}<br>
+                                <strong>Experience:</strong> {{ doctor.experience }} years
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="alert alert-info">No doctors found.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

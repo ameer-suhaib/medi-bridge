@@ -19,17 +19,13 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
-        print(user,"ssssssssss")
         if user is not None:
             login(request,user)
             if request.user.groups.exists():
                 group = request.user.groups.all()[0].name
-                print(group,"grrrrrrrrrrrrrrrrrr")
                 if group == 'Admin':
-                    print("admin groupp")
                     return redirect("admin_dashboard")
                 elif group == 'Patient':
-                    print("patient groupp")
                     return redirect("patient_dashboard")
                     # return render(request, "login.html")
                 else:
@@ -43,8 +39,9 @@ def register(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
+            print('loooo')
             user = form.save()
-            group = Group.objects.get(name = 'Patients')
+            group = Group.objects.get(name = 'Patient')
             user.groups.add(group)
             messages.info(request, "Registration Success!!.")
             return redirect(reverse("login"))

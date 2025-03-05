@@ -12,5 +12,10 @@ urlpatterns = [
     path('edit_slot/<int:slot_id>/', views.edit_slot, name='edit_slot'),
     path('delete_slot/<int:slot_id>/', views.delete_slot, name='delete_slot'),
     path('doc_profile/<int:id>/', views.doc_profile, name='doc_profile'),
-    path('appointments/', views.doctor_appointments, name='doctor_appointments')
+    path('appointments/', views.doctor_appointments, name='doctor_appointments'),
+    path('my-patients/', views.doctor_patients, name='doctor_patients'),
+    path('patient-details/<int:patient_id>/', views.view_patient_details, name='doctor_patient_details'),
+    path('hospital_docs/', views.hospital_docs, name='hospital_docs'),
+
+
 ]

@@ -240,3 +240,75 @@ def doctor_appointments(request):
     }
     
     return render(request, 'doctor_appointments.html', context)
+
+
+@login_required
+@user_passes_test(is_doctor)
+def doctor_patients(request):
+    try:
+        doctor = request.user.doctor
+    except Exception as e:
+        messages.error(request, "No doctor profile associated with this account.")
+        return render(request, 'doctor_patients.html', {'error': 'No doctor profile found'})
+
+    # Get patients who have appointments with this doctor
+    from apps.patientpro.models import Patient, Appointment
+    patient_ids = Appointment.objects.filter(doctor=doctor).values_list('user_id', flat=True).distinct()
+    
+    # Fetch patient details
+    patient_details = Patient.objects.filter(user_id__in=patient_ids)
+
+    context = {
+        'patients': patient_details
+    }
+    
+    return render(request, 'doctor_patients.html', context)
+
+@login_required
+@user_passes_test(is_doctor)
+def view_patient_details(request, patient_id):
+    from apps.patientpro.models import Patient, Appointment
+    
+    try:
+        doctor = request.user.doctor
+        patient = Patient.objects.get(id=patient_id)
+        
+        # Get patient's appointments with this doctor
+        patient_appointments = Appointment.objects.filter(
+            user=patient.user, 
+            doctor=doctor
+        ).order_by('-appointment_date')
+        
+        context = {
+            'patient': patient,
+            'appointments': patient_appointments
+        }
+        
+        return render(request, 'doctor_patient_details.html', context)
+    
+    except Patient.DoesNotExist:
+        messages.error(request, "Patient not found.")
+        return redirect('doctor_patients')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('doctor_patients')
+    
+
+
+def hospital_docs(request):
+    # Get all doctors
+    doctors = Doctor.objects.all()
+    
+    # Filter by specialization if provided
+    specialization = request.GET.get('specialization')
+    if specialization:
+        doctors = doctors.filter(specialization=specialization)
+    
+    # Prepare context with specialization choices
+    context = {
+        'doctors': doctors,
+        'specialization_choices': Doctor.SPECIALIZATION_CHOICES,
+        'selected_specialization': specialization
+    }
+    
+    return render(request, 'hospital_docs.html', context)

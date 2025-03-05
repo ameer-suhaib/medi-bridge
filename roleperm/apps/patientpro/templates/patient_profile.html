@@ -1,113 +1,121 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block extra_css %}
+{% endblock %}
 
 {% block content %}
-
-<form class="container" method="post">
-    {% csrf_token %}
-    <div class="row gutters">
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
-    <div class="card h-100">
-        <div class="card-body">
-            <div class="account-settings">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <img src="{% static 'userprofile.png' %}" alt="user profile" style="width: 100px; height: 100px; border-radius: 50%;">
-                    </div>
-                    <h5 class="user-name">{{user.username}}</h5>
-                    <h6 class="user-email">{{user.email}}</h6>
-                </div>
-                <div class="about">
-                    <h5>Address</h5>
-                    <p>{{patient.address}}</p>
-                </div>
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-3 col-lg-2 px-0 sidebar">
+        {% include 'sidebar.html' %}
     </div>
-    </div>
-    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
-    <div class="card h-100">
-        <div class="card-body">
+    <div class="col-md-9">
+        <form class="container" method="post">
+            {% csrf_token %}
             <div class="row gutters">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <h6 class="mb-2 text-primary">Personal Details</h6>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="fullName">Full Name:- </label>
-                        {{user.username}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="eMail">Email:- </label>
-                        {{user.email}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="phone">Phone</label><br>
-                        {{form.phone_number}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="website">Blood group</label>
-                        <div class="form-control">
-                            {{form.blood_group}}
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="account-settings">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <img src="{% static 'userprofile.png' %}" alt="user profile" style="width: 100px; height: 100px; border-radius: 50%;">
+                            </div>
+                            <h5 class="user-name">{{user.username}}</h5>
+                            <h6 class="user-email">{{user.email}}</h6>
+                        </div>
+                        <div class="about">
+                            <h5>Address</h5>
+                            <p>{{patient.address}}</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row gutters">
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="Street">Street</label><br>
-                        {{form.street}}
+            </div>
+            <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <h6 class="mb-2 text-primary">Personal Details</h6>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="fullName">Full Name:- </label>
+                                {{user.username}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="eMail">Email:- </label>
+                                {{user.email}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="phone">Phone</label><br>
+                                {{form.phone_number}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="website">Blood group</label>
+                                <div class="form-control">
+                                    {{form.blood_group}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="ciTy">City</label><br>
-                        {{form.city}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="sTate">State</label><br>
-                        {{form.state}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="zIp">Zip Code</label><br>
-                        {{form.zipcode}}
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="Street">Full Address</label>
-                        {{form.address}}
-                    </div>
-                </div>
-            </div><br>
-            <div class="row gutters">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="text-right">
-
-                        <a href="{% url 'patient_dashboard' %}">
-                            <button type="button" class="btn btn-secondary">Cancel</button>
-                        </a>
-                        
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                    <div class="row gutters">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="Street">Street</label><br>
+                                {{form.street}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="ciTy">City</label><br>
+                                {{form.city}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="sTate">State</label><br>
+                                {{form.state}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="zIp">Zip Code</label><br>
+                                {{form.zipcode}}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="Street">Full Address</label>
+                                {{form.address}}
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="text-right">
+        
+                                <a href="{% url 'patient_dashboard' %}">
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                </a>
+                                
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+            </div>
+        </form>
+        
     </div>
-    </div>
-    </div>
-</form>
-
+</div>
 {% endblock %}
