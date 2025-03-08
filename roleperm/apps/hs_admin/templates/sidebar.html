@@ -52,7 +52,11 @@
     }
 </style>
 {% endblock %}
-
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    </head>
+    
 <div class="sidebar">
     <div class="px-4 mb-3">
         {% if user.groups.all.0.name == 'Admin' %}
@@ -67,7 +71,7 @@
         {% if user.groups.all.0.name == 'Admin' %}
             <li class="nav-item">
                 <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                    <i class="fas fa-caret-square-right"></i> Dashboard
                 </a>
             </li>
             <li class="nav-item">
@@ -140,3 +144,5 @@
         </li>
     </ul>
 </div>
+
+</html>

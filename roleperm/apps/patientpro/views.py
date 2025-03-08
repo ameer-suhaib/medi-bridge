@@ -259,7 +259,6 @@ def my_appointment(request):
         'appointments':appointment,
         'today':timezone.now().date()
     }
-    print(context.get('appointments'),":::aaaaaaaaaaa")
     return render(request,"my_appointments.html",context)
 
 
